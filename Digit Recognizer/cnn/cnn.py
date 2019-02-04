@@ -21,14 +21,14 @@ class Trainer:
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.lr = 0.001
         self.epoch = 30
-        self.batch_size = 64
+        self.batch_size = 32
         self.optimizer = optim.Adam
         self.model_path = './checkpoint'
         self.train_loader, self.test_loader, self.answer_loader = get_loader(batch_size=self.batch_size)
         self.build_model()
 
     def build_model(self):
-        self.net = Model(1)
+        self.net = Model()
         self.net.to(self.device)
         os.makedirs(self.model_path, exist_ok=True)
         if self.model_path != '':
@@ -103,6 +103,6 @@ class Trainer:
 
 
 trainer = Trainer()
-#trainer.train()
+trainer.train()
 trainer.test()
 trainer.answer()
