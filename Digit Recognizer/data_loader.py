@@ -41,7 +41,6 @@ def get_loader(data_folder='train.csv', batch_size=4, image_size=28, shuffle=Fal
     train_dataset = _Dataset(data_folder, image_size)
     answer_dataset = __Dataset('test.csv', image_size)
 
-
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     test_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
     answer_loader = DataLoader(dataset=answer_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
