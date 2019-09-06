@@ -4,3 +4,9 @@ checkpoint
 
 .ipynb_checkpoints
 dataset
+train
+test
+train.csv
+test.csv
+answer.csv
+losses_check
