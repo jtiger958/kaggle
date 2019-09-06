@@ -1,6 +1,8 @@
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
+from torchvision.datasets.mnist import MNIST
+from torchvision.transforms import transforms
 from torch.utils.data.dataset import random_split
 
 def load_data(path='train.csv'):
@@ -46,3 +48,12 @@ def get_loader(data_folder='train.csv', batch_size=4, image_size=28, shuffle=Fal
     answer_loader = DataLoader(dataset=answer_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     return train_loader, test_loader, answer_loader
+
+
+def get_mnist_loader(data_dir='dataset', batch_size=128, num_workers=4):
+    transform = transforms.Compose([
+        transforms.RandomRotation((-30, 30)),
+        transforms.ToTensor(),
+    ])
+    return DataLoader(dataset=MNIST(root=data_dir, train=True, transform=transform, download=True), batch_size=batch_size,
+                      shuffle=True, num_workers=num_workers)

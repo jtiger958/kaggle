@@ -1,10 +1,11 @@
-from data_loader import load_data, get_loader
-from model import Model
 import torch.optim as optim
-from torch.nn import CrossEntropyLoss
 import torch
-from glob import glob
+from data_loader import load_data, get_loader, get_mnist_loader
+from model import Model
+from torch.nn import CrossEntropyLoss
+
 import os
+from glob import glob
 
 num, image = load_data()
 
@@ -27,6 +28,7 @@ class Trainer:
         self.optimizer = optim.Adam
         self.model_path = './checkpoint'
         self.train_loader, self.test_loader, self.answer_loader = get_loader(batch_size=self.batch_size)
+        self.mnist_loader = get_mnist_loader()
         self.build_model()
 
     def build_model(self):
@@ -55,7 +57,7 @@ class Trainer:
         criterion = CrossEntropyLoss()
 
         for epoch in range(self.epoch):
-            for step, (image, num) in enumerate(self.train_loader):
+            for step, (image, num) in enumerate(self.mnist_loader):
 
                 target = num.to(self.device)
                 image = image.to(self.device).float()
@@ -100,8 +102,6 @@ class Trainer:
                 f.write(data)
                 index = index + 1
         f.close()
-
-
 
 
 trainer = Trainer()

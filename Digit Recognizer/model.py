@@ -1,5 +1,5 @@
 import torch.nn as nn
-import torch
+
 
 class Model(nn.Module):
     def __init__(self, in_chennel=1):
@@ -39,6 +39,5 @@ class Model(nn.Module):
 
     def forward(self, x):
         layer = self.layer1(x)
-        print(layer.shape)
         layer = self.layer(layer.reshape(layer.size(0), -1))
         return layer
