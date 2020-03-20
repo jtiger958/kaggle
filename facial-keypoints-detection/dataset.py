@@ -9,32 +9,29 @@ import csv
 
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, data_dir, image_size):
-        self.files = glob(os.path.join(f'{data_dir}', '*.jpeg'))
         self.image_size = image_size
-        self.files.sort()
-        self.label_df = pd.read_csv(os.path.join(f'{data_dir}', 'trainLabels.csv'))
-
-        with open(os.path.join(f'{data_dir}', 'trainLabels.csv')) as infile:
-            reader = csv.reader(infile)
-            self.label_dict = {rows[0]: rows[1] for rows in reader}
+        self.label_df = pd.read_csv(os.path.join(f'{data_dir}', 'label.csv'))
+        self.num_row, self.num_col = self.label_df.shape
+        self.data_dir = data_dir
 
     def __getitem__(self, item):
-        image: Image.Image = Image.open(self.files[item]).convert('RGB')
-        image_id: str = self.files[item].split('\\')[-1].split('.')[-2] == 'cat'
+        image: Image.Image = Image.open(os.path.join(f'{self.data_dir}', f'{item}.png')).convert('RGB')
 
         transform = transforms.Compose([
-            transforms.CenterCrop(min(image.size[0], image.size[1])),
             transforms.Resize(self.image_size),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomVerticalFlip(),
-            transforms.RandomRotation(4),
             transforms.ToTensor(),
         ])
 
-        return self.label_dict[image_id], transform(image)
+        return self.label_df.iloc[item], transform(image)
 
     def __len__(self):
-        return len(self.files)
+        return self.num_row
+
+    def get_num_col(self):
+        return self.num_col
+
+    def get_num_row(self):
+        return self.num_col
 
 
 class TestDataset(torch.utils.data.Dataset):
