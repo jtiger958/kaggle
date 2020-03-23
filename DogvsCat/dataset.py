@@ -3,6 +3,7 @@ from PIL import Image
 import os
 from glob import glob
 from torchvision import transforms
+from torch.utils.data.dataset import random_split
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -20,7 +21,9 @@ class Dataset(torch.utils.data.Dataset):
             transforms.Resize(self.image_size),
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
+            # transforms.RandomRotation((-2, 2)),
             transforms.ToTensor(),
+            # transforms.RandomErasing(),
         ])
 
         return label, transform(image)
@@ -51,7 +54,14 @@ class TestDataset(torch.utils.data.Dataset):
 
 def get_loader(data_dir, image_size, batch_size):
     dataset = Dataset(data_dir, image_size)
-    return torch.utils.data.DataLoader(dataset, batch_size, True)
+
+    train_length = int(0.9 * len(dataset))
+    validation_length = len(dataset) - train_length
+
+    train_dataset, validation_dataset = random_split(dataset, (train_length, validation_length))
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size, True)
+    validation_loader = torch.utils.data.DataLoader(validation_dataset, batch_size, False)
+    return train_loader, validation_loader
 
 
 def get_test_loader(data_dir, image_size, batch_size):

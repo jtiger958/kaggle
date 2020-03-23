@@ -13,7 +13,7 @@ parser.add_argument('--image_size', type=int, default=224, help='the height / wi
 parser.add_argument('--data_dir', type=str, default='dataset/test', help='directory of dataset')
 parser.add_argument('--num_classes', type=int, default=2, help='number of model output channels')
 parser.add_argument('--batch_size', type=int, default=256, help='batch size')
-parser.add_argument('--epoch', type=int, default=68, help='start number of epochs to train for')
+parser.add_argument('--epoch', type=int, default=42, help='start number of epochs to train for')
 parser.add_argument('--checkpoint_dir', default='checkpoints', help="path to saved models (to continue training)")
 
 args = parser.parse_args()
@@ -34,4 +34,4 @@ for indexs, images in tqdm(data_loader):
         preds = net.predict_image(images)
 
         for i in range(len(indexs)):
-            file.write(f'{indexs[i]},{preds[i][1].item()}\n')
+            file.write(f'{indexs[i]},{preds[i].item()}\n')

@@ -10,3 +10,4 @@ train.csv
 test.csv
 answer.csv
 losses_check
+logs

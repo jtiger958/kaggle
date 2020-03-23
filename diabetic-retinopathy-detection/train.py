@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import argparse
 import os
+from torch.utils.tensorboard import SummaryWriter
 
 from models import Model
 from dataset import get_loader
@@ -17,11 +18,12 @@ parser.add_argument('--num_epoch', type=int, default=500, help='number of epochs
 parser.add_argument('--decay_epoch', type=int, default=30, help='decay epoch')
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
 parser.add_argument('--checkpoint_dir', default='checkpoints', help="path to saved models (to continue training)")
+parser.add_argument('--log_path', default='logs', help="directory to save train log")
 
 args = parser.parse_args()
 
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-net = Model(args.num_classes)
+net = Model()
 
 if os.path.exists(os.path.join(f'{args.checkpoint_dir}', f'{args.epoch-1}.pth')):
     net.load_state_dict(torch.load(os.path.join(f'{args.checkpoint_dir}', f'{args.epoch-1}.pth'), map_location=device))
@@ -34,8 +36,14 @@ scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.decay_epoch)
 data_loader = get_loader(args.data_dir, args.image_size, args.batch_size)
 scheduler.step(args.epoch)
 
+if not os.path.exists(args.log_path):
+    os.makedirs(args.log_path)
+writer = SummaryWriter(args.log_path)
+
 for iter in range(args.epoch, args.num_epoch):
     print(iter)
-    net.train_model(data_loader, criterion, optimizer)
-    torch.save(net.state_dict(), os.path.join(f'{args.checkpoint_dir}', f'{iter}.pth'))
+    train_loss, train_acc = net.train_model(data_loader, criterion, optimizer)
+    validation_loss, validation_acc = net.validate_model(data_loader, criterion)
+    writer.add_scalars('Loss', {'train': train_loss, 'val': validation_loss}, iter)
+    writer.add_scalars('Accuracy', {'train': train_acc, 'val': validation_acc}, iter)
     scheduler.step()

@@ -45,8 +45,30 @@ class Model(nn.Module):
             num_correct = (pred == label).sum().item()
             acc_avg.update(num_correct/image.shape[0])
 
-        print(f'Average [Accuracy: {acc_avg.avg:.8f}][Loss: {loss_avg.avg:.8f}]')
-        return loss_avg.avg
+        return loss_avg.avg, acc_avg.avg
+
+    def validate_model(self, data_loader, criterion):
+        device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+        self.train()
+        self.to(device)
+        loss_avg = AverageMeter()
+        acc_avg = AverageMeter()
+        loss_avg.reset()
+        acc_avg.reset()
+
+        for label, image in tqdm(data_loader):
+            image: torch.Tensor = image.to(device)
+            label: torch.Tensor = label.to(device).float().unsqueeze(dim=1)
+
+            pred: torch.Tensor = self.forward(image)
+            loss: torch.Tensor = criterion(pred, label)
+
+            loss_avg.update(loss.item())
+            pred = (pred + 0.5).long()
+            num_correct = (pred == label).sum().item()
+            acc_avg.update(num_correct/image.shape[0])
+
+        return loss_avg.avg, acc_avg.avg
 
     def predict_image(self, image: torch.Tensor):
         device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
