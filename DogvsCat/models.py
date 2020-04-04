@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torchvision.models.vgg import vgg11
+from torchvision.models.shufflenetv2 import shufflenet_v2_x1_0
 from tqdm import tqdm
 from utils import AverageMeter
 
@@ -8,15 +8,10 @@ from utils import AverageMeter
 class Model(nn.Module):
     def __init__(self, num_classes):
         super(Model, self).__init__()
-        self.net = vgg11(pretrained=True)
+        self.net = shufflenet_v2_x1_0(pretrained=True)
+        num_feature = self.net.fc.in_features
         self.net.classifier = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 4096),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(4096, 4096),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(4096, 1),
+            nn.Linear(num_feature, 1),
             nn.Sigmoid()
         )
 

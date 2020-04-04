@@ -14,7 +14,7 @@ parser.add_argument('--data_dir', type=str, default='dataset/train', help='direc
 parser.add_argument('--num_classes', type=int, default=2, help='number of model output channels')
 parser.add_argument('--batch_size', type=int, default=64, help='batch size')
 parser.add_argument('--epoch', type=int, default=0, help='start number of epochs to train for')
-parser.add_argument('--num_epoch', type=int, default=500, help='number of epochs to train for')
+parser.add_argument('--num_epoch', type=int, default=24, help='number of epochs to train for')
 parser.add_argument('--decay_epoch', type=int, default=30, help='decay epoch')
 parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
 parser.add_argument('--checkpoint_dir', default='checkpoints', help="path to saved models (to continue training)")
